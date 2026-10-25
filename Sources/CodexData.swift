@@ -180,10 +180,10 @@ enum CodexRPC {
     @Published var usageError:String?
     @Published var quotaLoading=false
     @Published var scanning=false
-    @Published var plan:Double { didSet{UserDefaults.standard.set(plan,forKey:"cyan.codex.dailyPlan")} }
-    @Published var feedback:String {didSet{UserDefaults.standard.set(feedback,forKey:"cyan.comfort."+CodexUsage.day(.now))}}
+    @Published var plan:Double { didSet{FeaturePreferences.shared.set(plan,forKey:"cyan.codex.dailyPlan")} }
+    @Published var feedback:String {didSet{FeaturePreferences.shared.set(feedback,forKey:"cyan.comfort."+CodexUsage.day(.now))}}
     private var quotaTimer:Timer?,usageTimer:Timer?
-    init() {plan=UserDefaults.standard.object(forKey:"cyan.codex.dailyPlan") as? Double ?? 10;feedback=UserDefaults.standard.string(forKey:"cyan.comfort."+CodexUsage.day(.now)) ?? "未记录"
+    init() {plan=FeaturePreferences.shared.object(forKey:"cyan.codex.dailyPlan") as? Double ?? 10;feedback=FeaturePreferences.shared.string(forKey:"cyan.comfort."+CodexUsage.day(.now)) ?? "未记录"
         observations=CodexLocalData.load([QuotaObservation].self,"quota-history.json") ?? []
         if observations.isEmpty {
             let url=FileManager.default.urls(for:.applicationSupportDirectory,in:.userDomainMask)[0].appendingPathComponent("app.codexcockpit.desktop/runtime-state.json")
@@ -198,7 +198,9 @@ enum CodexRPC {
             }
         }
     }
+    func stop() { quotaTimer?.invalidate(); usageTimer?.invalidate(); quotaTimer = nil; usageTimer = nil }
     func start() {
+        guard quotaTimer == nil && usageTimer == nil else { return }
         Task {await refreshQuota()};Task {await scan()}
         quotaTimer=Timer.scheduledTimer(withTimeInterval:300,repeats:true){[weak self] _ in Task{@MainActor in await self?.refreshQuota()}}
         usageTimer=Timer.scheduledTimer(withTimeInterval:60,repeats:true){[weak self] _ in Task{@MainActor in await self?.scan()}}

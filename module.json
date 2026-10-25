@@ -1,13 +1,15 @@
 {
   "id": "cyan-codex-usage",
   "name": "Cyan Codex Usage",
-  "version": "0.1.0-preview.1",
+  "version": "0.2.0-preview.1",
   "bundleID": "io.github.cyanyuanchu.cyan-codex-usage",
-  "protocolVersion": 1,
+  "protocolVersion": 2,
   "minMacOS": "14.0",
   "architecture": "arm64",
   "repository": "CyanYuanChu/cyan-codex-usage",
   "appName": "Cyan Codex Usage.app",
   "icon": "sparkles",
-  "description": "Codex 额度与本机用量"
+  "description": "Codex 额度与本机用量",
+  "moduleName": "cyan-codex-usage.groveplugin",
+  "pluginBundleID": "io.github.cyanyuanchu.cyan-codex-usage.feature"
 }
